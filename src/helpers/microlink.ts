@@ -80,6 +80,16 @@ export class MicrolinkBaseClass extends UpploadService {
     const form = params.uppload.container.querySelector(
       `.microlink-search-form`
     ) as HTMLFormElement | null;
+
+    if (params.uppload.settings.value) {
+      const input = params.uppload.container.querySelector(
+        `.microlink-search-input`
+      );
+      if (input) {
+        (input as HTMLInputElement).value = params.uppload.settings.value;
+      }
+    }
+
     if (form) {
       safeListen(form, "submit", event => {
         event.preventDefault();
@@ -98,18 +108,24 @@ export class MicrolinkBaseClass extends UpploadService {
                 url
               )}&screenshot=true&meta=false&embed=screenshot.url`
             )
-              .then(blob =>
+              .then(data =>
                 params.next(
-                  generateFileName(blobToUpploadFile(blob), this.name)
+                  generateFileName(
+                    blobToUpploadFile(data.blob, undefined, data.type),
+                    this.name
+                  )
                 )
               )
               .catch(error => params.handle(error))
               .then(() => (this.loading = false));
           } else if (this.name === "url") {
             imageUrlToBlob(url)
-              .then(blob =>
+              .then(data =>
                 params.next(
-                  generateFileName(blobToUpploadFile(blob), this.name)
+                  generateFileName(
+                    blobToUpploadFile(data.blob, undefined, data.type),
+                    this.name
+                  )
                 )
               )
               .catch(error => params.handle(error));
@@ -127,9 +143,12 @@ export class MicrolinkBaseClass extends UpploadService {
                 return result.data.image.url;
               })
               .then(url => imageUrlToBlob(url))
-              .then(blob =>
+              .then(data =>
                 params.next(
-                  generateFileName(blobToUpploadFile(blob), this.name)
+                  generateFileName(
+                    blobToUpploadFile(data.blob, undefined, data.type),
+                    this.name
+                  )
                 )
               )
               .catch(error => params.handle(error));

@@ -177,10 +177,10 @@ export class SearchBaseClass<ImageResult = any> extends UpploadService {
         this.update(params);
         if (url)
           imageUrlToBlob(url)
-            .then(blob =>
+            .then(data =>
               params.next(
                 generateFileName(
-                  blobToUpploadFile(blob),
+                  blobToUpploadFile(data.blob),
                   this.name,
                   image.getAttribute("aria-label")
                 )

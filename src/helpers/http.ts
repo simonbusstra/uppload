@@ -46,15 +46,19 @@ export function cachedFetch<T>(
  * Get a file Blob from an image URL
  * @param url - URL of an image
  */
-export const imageUrlToBlob = (url: string): Promise<Blob> => {
+export const imageUrlToBlob = (
+  url: string
+): Promise<{ type: string; blob: Blob }> => {
   return new Promise((resolve, reject) => {
     window
       .fetch(`https://wsrv.nl/?url=${encodeURIComponent(url)}`)
-      .then(response => {
+      .then(async response => {
         if (!response.ok) throw new Error("errors.response_not_ok");
-        return response.blob();
+        resolve({
+          type: response.headers.get("Content-Type") ?? "",
+          blob: await response.blob(),
+        });
       })
-      .then(blob => resolve(blob))
       .catch(error => reject(error));
   });
 };
